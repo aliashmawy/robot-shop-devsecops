@@ -51,6 +51,15 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run:
          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=erp-konecta -Dsonar.projectName='erp-konecta'
+
+      - name: SonarQube Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
+        timeout-minutes: 5     
+        with:
+          scanMetadataReportFile: target/sonar/report-task.txt
   payment:
     name: Build and deploy shipping microservice
     runs-on: [self-hosted]  # Use a standard runner instead of self-hosted
