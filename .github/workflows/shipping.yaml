@@ -67,6 +67,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Cache Dependency-Check database
+        uses: actions/cache@v4
+        with:
+          path: ~/.dependency-check
+          key: depcheck-data-${{ runner.os }}-${{ hashFiles('shipping/pom.xml') }}
+          restore-keys: |
+            depcheck-data-${{ runner.os }}-
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('shipping/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
       - name: Build project with Maven
         working-directory: shipping
         run: mvn clean install
