@@ -60,6 +60,32 @@ jobs:
         timeout-minutes: 5     
         with:
           scanMetadataReportFile: shipping/target/sonar/report-task.txt
+
+  depchecktest:
+    runs-on: ubuntu-latest
+    name: depecheck_test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build project with Maven
+        working-directory: shopping
+        run: mvn clean install
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
+        with:
+          project: 'test'
+          path: './shipping'
+          format: 'HTML'
+          out: 'reports'
+          args: >
+            --failOnCVSS 7
+            --enableRetired
+      - name: Upload Test results
+        uses: actions/upload-artifact@master
+        with:
+           name: Depcheck report
+           path: ${{github.workspace}}/reports
   payment:
     name: Build and deploy shipping microservice
     runs-on: [self-hosted]  # Use a standard runner instead of self-hosted
